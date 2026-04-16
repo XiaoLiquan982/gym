@@ -19,18 +19,6 @@
 - 结合当前会员已报名课程生成更贴合业务场景的回复
 - 可用于课程咨询、训练建议、健身房使用场景下的辅助问答
 
-后端 AI 接口位于：
-
-```text
-/api/chat/query
-```
-
-相关配置位于：
-
-```text
-gym-management-system/src/main/resources/application.yml
-```
-
 示例配置：
 
 ```yml
