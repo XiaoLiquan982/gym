@@ -55,11 +55,6 @@ gym_management_system.sql
 
 ## 后端启动
 
-后端目录：
-
-```text
-gym-management-system
-```
 
 数据库配置文件：
 
@@ -74,12 +69,6 @@ mvn spring-boot:run
 ```
 
 ## 前端启动
-
-前端目录：
-
-```text
-frontend
-```
 
 启动命令：
 
