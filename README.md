@@ -76,3 +76,4 @@ mvn spring-boot:run
 npm install
 npm run dev
 ```
+<img width="1429" height="1101" alt="image" src="https://github.com/user-attachments/assets/1165c894-5566-4230-baa9-7961b014c8ff" />
