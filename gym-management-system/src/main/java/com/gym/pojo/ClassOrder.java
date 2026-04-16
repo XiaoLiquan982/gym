@@ -1,12 +1,17 @@
 package com.gym.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@TableName("class_order")
 public class ClassOrder {
 
+    @TableId(value = "class_order_id", type = IdType.AUTO)
     private Integer classOrderId;
     private Integer classId;
     private String className;
