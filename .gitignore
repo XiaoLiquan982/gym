@@ -1,0 +1,10 @@
+.idea/workspace.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/queries/
+
+*.log
+.DS_Store
+Thumbs.db
