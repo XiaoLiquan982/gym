@@ -76,4 +76,8 @@ mvn spring-boot:run
 npm install
 npm run dev
 ```
+## 界面展示
 <img width="1429" height="1101" alt="image" src="https://github.com/user-attachments/assets/1165c894-5566-4230-baa9-7961b014c8ff" />
+
+<img width="1483" height="1075" alt="image" src="https://github.com/user-attachments/assets/91f3d9a2-43d5-455d-b0f5-990a45fd432e" />
+
