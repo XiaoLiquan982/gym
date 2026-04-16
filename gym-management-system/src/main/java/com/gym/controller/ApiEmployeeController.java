@@ -1,8 +1,8 @@
 package com.gym.controller;
 
+import com.gym.common.ApiResponse;
 import com.gym.pojo.Employee;
 import com.gym.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,80 +11,62 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 @RestController
 @RequestMapping("/api/employee")
 public class ApiEmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
+
+    public ApiEmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @GetMapping("/selEmployee")
-    public Map<String, Object> selectEmployee() {
+    public ApiResponse selectEmployee() {
         List<Employee> employeeList = employeeService.findAll();
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("employeeList", employeeList);
-        return resp;
+        return ApiResponse.ok().add("employeeList", employeeList);
     }
 
     @GetMapping("/toAddEmployee")
-    public Map<String, Object> toAddEmployee() {
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return resp;
+    public ApiResponse toAddEmployee() {
+        return ApiResponse.ok();
     }
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<Map<String, Object>> addEmployee(Employee employee) {
+    public ResponseEntity<ApiResponse> addEmployee(Employee employee) {
         Random random = new Random();
         String account1 = "1010";
         for (int i = 0; i < 5; i++) {
             account1 += random.nextInt(10);
         }
         Integer account = Integer.parseInt(account1);
-
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String nowDay = simpleDateFormat.format(date);
+        String nowDay = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         employee.setEmployeeAccount(account);
         employee.setEntryTime(nowDay);
-
         employeeService.insertEmployee(employee);
 
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @PostMapping("/delEmployee")
-    public ResponseEntity<Map<String, Object>> deleteEmployee(Integer employeeAccount) {
+    public ResponseEntity<ApiResponse> deleteEmployee(Integer employeeAccount) {
         employeeService.deleteByEmployeeAccount(employeeAccount);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @GetMapping("/toUpdateEmployee")
-    public Map<String, Object> toUpdateEmployee(Integer employeeAccount) {
+    public ApiResponse toUpdateEmployee(Integer employeeAccount) {
         List<Employee> employeeList = employeeService.selectByEmployeeAccount(employeeAccount);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("employeeList", employeeList);
-        return resp;
+        return ApiResponse.ok().add("employeeList", employeeList);
     }
 
     @PostMapping("/updateEmployee")
-    public ResponseEntity<Map<String, Object>> updateEmployee(Employee employee) {
+    public ResponseEntity<ApiResponse> updateEmployee(Employee employee) {
         employeeService.updateMemberByEmployeeAccount(employee);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 }
-

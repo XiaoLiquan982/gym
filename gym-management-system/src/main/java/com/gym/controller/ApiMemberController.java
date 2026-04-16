@@ -1,45 +1,42 @@
 package com.gym.controller;
 
+import com.gym.common.ApiResponse;
 import com.gym.pojo.Member;
 import com.gym.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 @RestController
 @RequestMapping("/api/member")
 public class ApiMemberController {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+
+    public ApiMemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @GetMapping("/selMember")
-    public Map<String, Object> selectMember() {
+    public ApiResponse selectMember() {
         List<Member> memberList = memberService.findAll();
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("memberList", memberList);
-        return resp;
+        return ApiResponse.ok().add("memberList", memberList);
     }
 
     @GetMapping("/toAddMember")
-    public Map<String, Object> toAddMember() {
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return resp;
+    public ApiResponse toAddMember() {
+        return ApiResponse.ok();
     }
 
     @PostMapping("/addMember")
-    public ResponseEntity<Map<String, Object>> addMember(Member member) {
+    public ResponseEntity<ApiResponse> addMember(Member member) {
         Random random = new Random();
         String account1 = "2021";
         for (int i = 0; i < 5; i++) {
@@ -47,13 +44,8 @@ public class ApiMemberController {
         }
         Integer account = Integer.parseInt(account1);
 
-        // 初始密码固定为 123456（与你原项目保持一致）
         String password = "123456";
-
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String nowDay = simpleDateFormat.format(date);
-
+        String nowDay = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         Integer nextClass = member.getCardClass();
 
         member.setMemberAccount(account);
@@ -62,55 +54,41 @@ public class ApiMemberController {
         member.setCardNextClass(nextClass);
 
         memberService.insertMember(member);
-
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @PostMapping("/delMember")
-    public ResponseEntity<Map<String, Object>> deleteMember(Integer memberAccount) {
+    public ResponseEntity<ApiResponse> deleteMember(Integer memberAccount) {
         memberService.deleteByMemberAccount(memberAccount);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @GetMapping("/toUpdateMember")
-    public Map<String, Object> toUpdateMember(Integer memberAccount) {
+    public ApiResponse toUpdateMember(Integer memberAccount) {
         List<Member> memberList = memberService.selectByMemberAccount(memberAccount);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("memberList", memberList);
-        return resp;
+        return ApiResponse.ok().add("memberList", memberList);
     }
 
     @PostMapping("/updateMember")
-    public ResponseEntity<Map<String, Object>> updateMember(Member member) {
+    public ResponseEntity<ApiResponse> updateMember(Member member) {
         memberService.updateMemberByMemberAccount(member);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @GetMapping("/toSelByCard")
-    public Map<String, Object> toSelByCard() {
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return resp;
+    public ApiResponse toSelByCard() {
+        return ApiResponse.ok();
     }
 
     @PostMapping("/selByCard")
-    public Map<String, Object> selectByCardId(Integer memberAccount) {
+    public ApiResponse selectByCardId(Integer memberAccount) {
         List<Member> memberList = memberService.selectByMemberAccount(memberAccount);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
+        ApiResponse response = ApiResponse.ok();
         if (memberList != null) {
-            resp.put("memberList", memberList);
+            response.add("memberList", memberList);
         } else {
-            resp.put("noMessage", "会员卡号不存在！");
+            response.add("noMessage", "会员卡号不存在");
         }
-        return resp;
+        return response;
     }
 }
-

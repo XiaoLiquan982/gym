@@ -37,6 +37,11 @@ public class ClassOrderServiceImpl implements ClassOrderService {
     }
 
     @Override
+    public int deleteByClassOrderIdAndMemberAccount(Integer classOrderId, Integer memberAccount) {
+        return classOrderMapper.deleteByClassOrderIdAndMemberAccount(classOrderId, memberAccount);
+    }
+
+    @Override
     public ClassOrder selectMemberByClassIdAndMemberAccount(Integer classId, Integer memberAccount) {
         return classOrderMapper.selectMemberByClassIdAndMemberAccount(classId, memberAccount);
     }

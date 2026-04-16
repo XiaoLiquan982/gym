@@ -26,6 +26,13 @@
         WHERE class_order_id = #{classOrderId}
     </delete>
 
+    <delete id="deleteByClassOrderIdAndMemberAccount">
+        DELETE
+        FROM class_order
+        WHERE class_order_id = #{classOrderId}
+          AND member_account = #{memberAccount}
+    </delete>
+
     <select id="selectMemberByClassIdAndMemberAccount" parameterType="java.lang.Integer" resultType="classOrder">
         SELECT *
         FROM class_order

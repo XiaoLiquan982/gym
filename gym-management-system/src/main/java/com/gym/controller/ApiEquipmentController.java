@@ -1,72 +1,58 @@
 package com.gym.controller;
 
+import com.gym.common.ApiResponse;
 import com.gym.pojo.Equipment;
 import com.gym.service.EquipmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/equipment")
 public class ApiEquipmentController {
 
-    @Autowired
-    private EquipmentService equipmentService;
+    private final EquipmentService equipmentService;
+
+    public ApiEquipmentController(EquipmentService equipmentService) {
+        this.equipmentService = equipmentService;
+    }
 
     @GetMapping("/selEquipment")
-    public Map<String, Object> selectEquipment() {
+    public ApiResponse selectEquipment() {
         List<Equipment> equipmentList = equipmentService.findAll();
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("equipmentList", equipmentList);
-        return resp;
+        return ApiResponse.ok().add("equipmentList", equipmentList);
     }
 
     @PostMapping("/delEquipment")
-    public ResponseEntity<Map<String, Object>> deleteEquipment(Integer equipmentId) {
+    public ResponseEntity<ApiResponse> deleteEquipment(Integer equipmentId) {
         equipmentService.deleteByEquipmentId(equipmentId);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @GetMapping("/toUpdateEquipment")
-    public Map<String, Object> toUpdateEquipment(Integer equipmentId) {
+    public ApiResponse toUpdateEquipment(Integer equipmentId) {
         List<Equipment> equipmentList = equipmentService.selectByEquipmentId(equipmentId);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        resp.put("equipmentList", equipmentList);
-        return resp;
+        return ApiResponse.ok().add("equipmentList", equipmentList);
     }
 
     @GetMapping("/toAddEquipment")
-    public Map<String, Object> toAddEquipment() {
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return resp;
+    public ApiResponse toAddEquipment() {
+        return ApiResponse.ok();
     }
 
     @PostMapping("/updateEquipment")
-    public ResponseEntity<Map<String, Object>> updateEquipment(Equipment equipment) {
+    public ResponseEntity<ApiResponse> updateEquipment(Equipment equipment) {
         equipmentService.updateEquipmentByEquipmentId(equipment);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @PostMapping("/addEquipment")
-    public ResponseEntity<Map<String, Object>> addEquipment(Equipment equipment) {
+    public ResponseEntity<ApiResponse> addEquipment(Equipment equipment) {
         equipmentService.insertEquipment(equipment);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", true);
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 }
-

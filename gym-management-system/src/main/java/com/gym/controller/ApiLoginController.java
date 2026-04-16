@@ -1,21 +1,20 @@
 package com.gym.controller;
 
+import com.gym.common.ApiResponse;
+import com.gym.common.ResultCode;
 import com.gym.pojo.Admin;
 import com.gym.pojo.Member;
 import com.gym.service.AdminService;
 import com.gym.service.EmployeeService;
 import com.gym.service.EquipmentService;
 import com.gym.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -41,51 +40,50 @@ public class ApiLoginController {
     }
 
     @PostMapping("/adminLogin")
-    public ResponseEntity<Map<String, Object>> adminLogin(Admin admin, HttpSession session) {
+    public ResponseEntity<ApiResponse> adminLogin(Admin admin, HttpSession session) {
         Admin loggedIn = adminService.adminLogin(admin);
         if (loggedIn == null) {
-            return unauthorized("账号或密码有误");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.fail(ResultCode.UNAUTHORIZED, "账号或密码有误"));
         }
+
         putAdminMainDataInSession(session, loggedIn);
-        return ResponseEntity.ok(singleSuccess());
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @PostMapping("/userLogin")
-    public ResponseEntity<Map<String, Object>> userLogin(Member member, HttpSession session) {
+    public ResponseEntity<ApiResponse> userLogin(Member member, HttpSession session) {
         Member loggedIn = memberService.userLogin(member);
         if (loggedIn == null) {
-            return unauthorized("账号或密码有误");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.fail(ResultCode.UNAUTHORIZED, "账号或密码有误"));
         }
+
         session.setAttribute(SESSION_USER, loggedIn);
-        return ResponseEntity.ok(singleSuccess());
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
+    public ResponseEntity<ApiResponse> logout(HttpSession session) {
         session.invalidate();
-        return ResponseEntity.ok(singleSuccess());
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     @GetMapping("/toAdminMain")
-    public ResponseEntity<Map<String, Object>> toAdminMain(HttpSession session) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("success", true);
-        body.put("memberTotal", session.getAttribute("memberTotal"));
-        body.put("employeeTotal", session.getAttribute("employeeTotal"));
-        body.put("humanTotal", session.getAttribute("humanTotal"));
-        body.put("equipmentTotal", session.getAttribute("equipmentTotal"));
+    public ResponseEntity<ApiResponse> toAdminMain(HttpSession session) {
+        ApiResponse body = ApiResponse.ok()
+                .add("memberTotal", session.getAttribute("memberTotal"))
+                .add("employeeTotal", session.getAttribute("employeeTotal"))
+                .add("humanTotal", session.getAttribute("humanTotal"))
+                .add("equipmentTotal", session.getAttribute("equipmentTotal"));
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/toUserMain")
-    public ResponseEntity<Map<String, Object>> toUserMain(HttpSession session) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("success", true);
-        body.put("member", session.getAttribute(SESSION_USER));
-        return ResponseEntity.ok(body);
+    public ResponseEntity<ApiResponse> toUserMain(HttpSession session) {
+        return ResponseEntity.ok(ApiResponse.ok().add("member", session.getAttribute(SESSION_USER)));
     }
 
-    /** 管理员登录后写入 session：身份 + 主页统计（与原先 adminMain 依赖的 key 一致）。 */
     private void putAdminMainDataInSession(HttpSession session, Admin admin) {
         session.setAttribute(SESSION_ADMIN, admin);
         Integer memberTotal = memberService.selectTotalCount();
@@ -96,18 +94,5 @@ public class ApiLoginController {
         session.setAttribute("employeeTotal", employeeTotal);
         session.setAttribute("humanTotal", humanTotal);
         session.setAttribute("equipmentTotal", equipmentTotal);
-    }
-
-    private static Map<String, Object> singleSuccess() {
-        Map<String, Object> m = new HashMap<>(2);
-        m.put("success", true);
-        return m;
-    }
-
-    private static ResponseEntity<Map<String, Object>> unauthorized(String message) {
-        Map<String, Object> m = new HashMap<>(4);
-        m.put("success", false);
-        m.put("message", message);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(m);
     }
 }
